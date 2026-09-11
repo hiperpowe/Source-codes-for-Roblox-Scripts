@@ -1,3 +1,6 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("INFAMY", "Synapse")
+
 local Main = Window:NewTab("Main")
 local MainSection = Main:NewSection("Usual Stuff")
 
