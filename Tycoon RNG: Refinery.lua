@@ -237,7 +237,7 @@ ESPSection:NewToggle("Cube ESP", "See Ore Names", function(state)
                                         billboard.Parent = v
 
                                         local textLabel = Instance.new("TextLabel")
-                                        textLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                                        textLabel.Size = UDim2.new(1.5, 0, 0.5, 0)
                                         textLabel.Position = UDim2.new(0, 0, 0, 0)
                                         textLabel.BackgroundTransparency = 0
                                         textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
