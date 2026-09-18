@@ -1,8 +1,13 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("Tycoon RNG: Refinery", "Ocean")
 
+local wp = false
+local jp = false
+local hh = false
 local lightingconnects = {}
 local FastRoll = false
+local limit = 5000
+local RemoveItem = false
 local CubeESP = false
 local CubeESPtable = {}
 local CubeESPConnect = nil
@@ -24,51 +29,51 @@ end)
 
 MainSection:NewToggle("Loop Walkspeed", "Loop Speed", function(state)
     if state then
-        a = game.Players.LocalPlayer.Character.Humanoid.WalkSpeed
-        i = true
-        while wait() do
-            if i == true then
+        wp = true
+        local a = game.Players.LocalPlayer.Character.Humanoid.WalkSpeed
+        while task.wait(0.1) do
+            if wp then
                 game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = a
-            elseif i == false then
+            elseif wp == false then
                 break
             end
         end
     else
-        i = false
+        wp = false
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
     end
 end)
 
 MainSection:NewToggle("Loop JumpPower", "Loop Jump Height", function(state)
     if state then
-        a = game.Players.LocalPlayer.Character.Humanoid.JumpPower
-        i = true
-        while wait() do
-            if i == true then
+        jp = true
+        local a = game.Players.LocalPlayer.Character.Humanoid.JumpPower
+        while task.wait(0.1) do
+            if jp then
                 game.Players.LocalPlayer.Character.Humanoid.JumpPower = a
-            elseif i == false then
+            elseif jp == false then
                 break
             end
         end
     else
-        i = false
+        jp = false
         game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
     end
 end)
 
 MainSection:NewToggle("Loop HipHeight", "Loop HipHeight", function(state)
     if state then
-        a = game.Players.LocalPlayer.Character.Humanoid.HipHeight
-        i = true
-        while wait() do
-            if i == true then
+        hh = true
+        local a = game.Players.LocalPlayer.Character.Humanoid.HipHeight
+        while task.wait(0.1) do
+            if hh then
                 game.Players.LocalPlayer.Character.Humanoid.HipHeight = a
-            elseif i == false then
+            elseif hh == false then
                 break
             end
         end
     else
-        i = false
+        hh = false
         game.Players.LocalPlayer.Character.Humanoid.HipHeight = 0
     end
 end)
@@ -120,7 +125,7 @@ TPSection:NewButton("More Luck Area", "Teloport to More Luck Area", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(15.5204563, 100.712257, 304.36145, -0.0569952726, -0.00846459996, 0.99833858, -0.0252959803, 0.999655247, 0.00703161303, -0.998053908, -0.0248531848, -0.0571898222)
 end)
 
-local AUTO = Window:NewTab("Automation")
+local AUTO = Window:NewTab("Automation") 
 local AUTOSection = AUTO:NewSection("Automate things :)")
 
 AUTOSection:NewToggle("Auto Fast Roll", "Rolls for you every second", function(state)
@@ -143,6 +148,47 @@ AUTOSection:NewToggle("Auto Fast Roll", "Rolls for you every second", function(s
         end
     else
         FastRoll = false
+    end
+end)
+
+AUTOSection:NewTextBox("Edits Unwanted limit", "Edit Auto removes unwanted items limit", function(txt)
+	limit = tonumber(txt)
+end)
+
+AUTOSection:NewToggle("Auto Removes unwanted items", "Removes unwanted items for you", function(state)
+     if state then
+        RemoveItem = true
+        while task.wait(0.1) do
+            if RemoveItem then
+                xpcall(function()
+                    for _, v in pairs(game.Players.LocalPlayer.PlayerGui.InventoryGui.MainFrame.ItemContainer:GetChildren()) do
+                        if v:IsA("ImageLabel") then
+                            local rarity = v.RarityImage.ItemRarity
+                            local number, suffix = rarity.Text:match("/%s*([%d%.]+)%s*([kKmMbB]?)")
+                            local chance = tonumber(number)
+                            if suffix:lower() == "k" then
+                                chance *= 1000
+                            elseif suffix:lower() == "m" then
+                                chance *= 1000000
+                            elseif suffix:lower() == "b" then
+                                chance *= 1000000000
+                            end
+                            if chance and chance < limit then
+                                local id = v.Name:match("^Item_(.+)$")
+                                game.ReplicatedStorage.PlacementEvent:FireServer("RemoveItem", id)
+                            end
+                        end
+                    end
+                end, function(err)
+                    warn("Cube ESP Error")
+                    warn(debug.traceback(err))
+                end)
+            elseif RemoveItem == false then
+                break
+            end
+        end
+    else
+        RemoveItem = false
     end
 end)
 
@@ -193,7 +239,8 @@ ESPSection:NewToggle("Cube ESP", "See Ore Names", function(state)
                                         local textLabel = Instance.new("TextLabel")
                                         textLabel.Size = UDim2.new(1, 0, 0.5, 0)
                                         textLabel.Position = UDim2.new(0, 0, 0, 0)
-                                        textLabel.BackgroundTransparency = 1
+                                        textLabel.BackgroundTransparency = 0
+                                        textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
                                         textLabel.TextColor3 = Color3.new(1, 1, 1)
                                         textLabel.Text = v.Name
                                         textLabel.Parent = billboard
@@ -209,7 +256,8 @@ ESPSection:NewToggle("Cube ESP", "See Ore Names", function(state)
                                     local textLabel = Instance.new("TextLabel")
                                     textLabel.Size = UDim2.new(1, 0, 0.5, 0)
                                     textLabel.Position = UDim2.new(0, 0, 0, 0)
-                                    textLabel.BackgroundTransparency = 1
+                                    textLabel.BackgroundTransparency = 0
+                                    textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
                                     textLabel.TextColor3 = Color3.new(1, 1, 1)
                                     textLabel.Text = v.Name
                                     textLabel.Parent = billboard
