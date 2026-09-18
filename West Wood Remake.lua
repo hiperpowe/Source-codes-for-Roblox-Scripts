@@ -249,9 +249,10 @@ ESPSection:NewToggle("Player ESP", "See Player Names", function(state)
                                         billboard.Parent = v.HumanoidRootPart
 
                                         local textLabel = Instance.new("TextLabel")
-                                        textLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                                        textLabel.Size = UDim2.new(2, 0, 0.5, 0)
                                         textLabel.Position = UDim2.new(0, 0, 0, 0)
-                                        textLabel.BackgroundTransparency = 1
+                                        textLabel.BackgroundTransparency = 0
+                                        textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
                                         textLabel.TextColor3 = Color3.new(1, 1, 1)
                                         textLabel.Text = v.Name
                                         textLabel.Parent = billboard
