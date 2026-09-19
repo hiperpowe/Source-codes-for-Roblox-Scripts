@@ -11,6 +11,9 @@ local NoFogConnect = nil
 local MonsterESP = false
 local MonsterESPtable = {}
 local MonsterESPConnect = nil
+local FDealerESP = false
+local FDealerESPtable = {}
+local FDealerESPConnect = nil
 local playertable = {}
 local player = false
 local playerconnect
@@ -149,6 +152,10 @@ VisualSection:NewToggle("No Fog", "Removes Fog", function(state)
     end
 end)
 
+VisualSection:NewButton("Open Dealer's Shop", "Open's Dealer's Shop UI", function(state)
+    fireproximityprompt(game.workspace.NPC.Friendly.Dealer.HumanoidRootPart.Attachment.ProximityPrompt)
+end)
+
 local ESP = Window:NewTab("ESP")
 local ESPSection = ESP:NewSection("toggle ESP")
 
@@ -159,9 +166,9 @@ ESPSection:NewToggle("Wendigo ESP", "See Wendigo Highlight", function(state)
             table.insert(MonsterESPtable, v)
         end
         MonsterESPConnect = game.workspace.NPC.Enemy.ChildAdded:Connect(function(v)
-                table.insert(MonsterESPtable, v)
+            table.insert(MonsterESPtable, v)
         end)
-        while task.wait(1) do
+        while task.wait(0.1) do
             if MonsterESP then
                 xpcall(function()
                     for i = #MonsterESPtable, 1, -1 do
@@ -169,20 +176,38 @@ ESPSection:NewToggle("Wendigo ESP", "See Wendigo Highlight", function(state)
                         if not v or not v.Parent then
                             table.remove(MonsterESPtable, i)
                         else
-                            if not v:FindFirstChild("ESPHighlight") and v:FindFirstChild("HumanoidRootPart") then
-                                local highlight = Instance.new("Highlight")
-                                highlight.Name = "ESPHighlight"
-                                highlight.FillColor = Color3.new(1, 0, 0)
-                                highlight.OutlineTransparency = 0
-                                highlight.Parent = v
+                            if v:FindFirstChild("HumanoidRootPart") then
+                                if not v.HumanoidRootPart:FindFirstChild("ESPBillboard") then
+                                    local billboard = Instance.new("BillboardGui")
+                                    billboard.Name = "ESPBillboard"
+                                    billboard.Size = UDim2.new(0, 50, 0, 50)
+                                    billboard.StudsOffset = Vector3.new(0, 1, 0)
+                                    billboard.AlwaysOnTop = true
+                                    billboard.Parent = v.HumanoidRootPart
+
+                                    local textLabel = Instance.new("TextLabel")
+                                    textLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                                    textLabel.Position = UDim2.new(0, 0, 0, 0)
+                                    textLabel.BackgroundTransparency = 0
+                                    textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
+                                    textLabel.TextColor3 = Color3.new(0, 1, 0)
+                                    textLabel.Text = v.Name
+                                    textLabel.Parent = billboard
+
+                                    local highlight = Instance.new("Highlight")
+                                    highlight.Name = "ESPHighlight"
+                                    highlight.FillColor = Color3.new(0, 1, 0)
+                                    highlight.OutlineTransparency = 0
+                                    highlight.Parent = v
+                                end
                             end
                         end
                     end
                 end, function(err)
-                    warn("Highlight ESP Error")
+                    warn("Wendigo ESP/Highlight Error")
                     warn(debug.traceback(err))
                 end)
-            elseif MonsterESP == false then 
+            elseif player == false then
                 break
             end
         end
@@ -191,8 +216,70 @@ ESPSection:NewToggle("Wendigo ESP", "See Wendigo Highlight", function(state)
         MonsterESPConnect:Disconnect()
         MonsterESPtable = {}
         for _, v in pairs(game.workspace.NPC.Enemy:GetChildren()) do
-            if v:FindFirstChild("ESPHighlight") then
-                v.ESPHighlight:Destroy()
+            if v:FindFirstChild("HumanoidRootPart") then
+                if v.HumanoidRootPart:FindFirstChild("ESPBillboard") then
+                    v.HumanoidRootPart.ESPBillboard:Destroy()
+                end
+            end
+        end
+    end
+end)
+
+ESPSection:NewToggle("Friendly Dealer ESP", "See Friendly Dealer", function(state)
+    if state then
+        FDealerESP = true
+        for _, v in pairs(game.workspace.NPC.Friendly:GetChildren()) do
+            table.insert(FDealerESPtable, v)
+        end
+        FDealerESPConnect = game.workspace.NPC.Friendly.ChildAdded:Connect(function(v)
+            table.insert(FDealerESPtable, v)
+        end)
+        while task.wait(0.1) do
+            if FDealerESP then
+                xpcall(function()
+                    for i = #FDealerESPtable, 1, -1 do
+                        local v = FDealerESPtable[i]
+                        if not v or not v.Parent then
+                            table.remove(FDealerESPtable, i)
+                        else
+                            if v:FindFirstChild("HumanoidRootPart") then
+                                if not v.HumanoidRootPart:FindFirstChild("ESPBillboard") then
+                                    local billboard = Instance.new("BillboardGui")
+                                    billboard.Name = "ESPBillboard"
+                                    billboard.Size = UDim2.new(0, 50, 0, 50)
+                                    billboard.StudsOffset = Vector3.new(0, 1, 0)
+                                    billboard.AlwaysOnTop = true
+                                    billboard.Parent = v.HumanoidRootPart
+
+                                    local textLabel = Instance.new("TextLabel")
+                                    textLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                                    textLabel.Position = UDim2.new(0, 0, 0, 0)
+                                    textLabel.BackgroundTransparency = 0
+                                    textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
+                                    textLabel.TextColor3 = Color3.new(1, 0, 0)
+                                    textLabel.Text = v.Name
+                                    textLabel.Parent = billboard
+                                end
+                            end
+                        end
+                    end
+                end, function(err)
+                    warn("Friendly Dealer ESP Error")
+                    warn(debug.traceback(err))
+                end)
+            elseif player == false then
+                break
+            end
+        end
+    else
+        FDealerESP = false
+        FDealerESPConnect:Disconnect()
+        FDealerESPtable = {}
+        for _, v in pairs(game.workspace.NPC.Friendly:GetChildren()) do
+            if v:FindFirstChild("HumanoidRootPart") then
+                if v.HumanoidRootPart:FindFirstChild("ESPBillboard") then
+                    v.HumanoidRootPart.ESPBillboard:Destroy()
+                end
             end
         end
     end
@@ -213,11 +300,29 @@ itemsSection:NewButton("Mod Flashlight", "Make the flashlight better", function(
     end
 end)
 
-itemsSection:NewSlider("Adjust Brightness", "Change the Brightness value", 500, 6, function(s) -- 500 (MaxValue) | 6 (MinValue)
+itemsSection:NewSlider("Flashlight Brightness", "Change the Brightness value", 30, 6, function(s) -- 500 (MaxValue) | 6 (MinValue)
     if game.Players.LocalPlayer.Character:FindFirstChild("FlashLight") then
         game.Players.LocalPlayer.Character.FlashLight.Light.SpotLight.Brightness = s
     elseif game.Players.LocalPlayer.Backpack:FindFirstChild("FlashLight") then
         game.Players.LocalPlayer.Backpack.FlashLight.Light.SpotLight.Brightness = s
+    end
+end)
+
+itemsSection:NewButton("Mod Headlamp", "Make the Headlamp better", function()
+    if game.Players.LocalPlayer.Character:FindFirstChild("HeadLamp") then
+        game.Players.LocalPlayer.Character.HeadLamp.Light.SpotLight_02.Angle = 180
+        game.Players.LocalPlayer.Character.HeadLamp.Light.SpotLight_02.Shadows = false
+    elseif game.Players.LocalPlayer.Backpack:FindFirstChild("HeadLamp") then
+        game.Players.LocalPlayer.Backpack.HeadLamp.Light.SpotLight_02.Angle = 180
+        game.Players.LocalPlayer.Backpack.HeadLamp.Light.SpotLight_02.Shadows = false
+    end
+end)
+
+itemsSection:NewSlider("Headlamp Brightness", "Change the Brightness value", 30, 2, function(s) -- 500 (MaxValue) | 6 (MinValue)
+    if game.Players.LocalPlayer.Character:FindFirstChild("HeadLamp") then
+        game.Players.LocalPlayer.Character.HeadLamp.Light.SpotLight_02.Brightness = s
+    elseif game.Players.LocalPlayer.Backpack:FindFirstChild("HeadLamp") then
+        game.Players.LocalPlayer.Backpack.HeadLamp.Light.SpotLight_02.Brightness = s
     end
 end)
 
