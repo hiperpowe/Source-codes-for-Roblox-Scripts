@@ -267,6 +267,12 @@ ESPSection:NewToggle("Player ESP", "See Player Names", function(state) -- Player
                                         textLabel.TextColor3 = Color3.new(1, 1, 1)
                                         textLabel.Text = v.Name
                                         textLabel.Parent = billboard
+
+                                        local highlight = Instance.new("Highlight")
+                                        highlight.Name = "ESPHighlight"
+                                        highlight.FillColor = Color3.new(1, 1, 1)
+                                        highlight.OutlineTransparency = 0
+                                        highlight.Parent = v
                                     end
                                 end
                             end
@@ -288,6 +294,7 @@ ESPSection:NewToggle("Player ESP", "See Player Names", function(state) -- Player
             if v:FindFirstChild("HumanoidRootPart") then
                 if v.HumanoidRootPart:FindFirstChild("ESPBillboard") then
                     v.HumanoidRootPart.ESPBillboard:Destroy()
+                    v.ESPHighlight:Destroy()
                 end
             end
         end
