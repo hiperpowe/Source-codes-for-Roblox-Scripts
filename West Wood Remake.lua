@@ -4,6 +4,10 @@ local Window = Library.CreateLib("West Wood: Remake", "Ocean")
 local wp = false
 local jp = false
 local hh = false
+local godmode = false
+local antidmg = false
+local antidmghook
+local antidmgonce = false
 local infstam = false
 local noclip = false
 local nocliptable = {}
@@ -102,6 +106,44 @@ end)
 local Player = Window:NewTab("Player")
 local PlayerSection = Player:NewSection("Usual Stuff")
 
+PlayerSection:NewToggle("Godmode", "Never Die", function(state)
+    if state then
+        godmode = true
+        while task.wait(0.05) do
+            if godmode then
+                game.ReplicatedStorage.RemoteEvents.Player.Damage:FireServer(-100)
+            elseif godmode == false then
+                break
+            end
+        end
+    else
+        godmode = false
+    end
+end)
+
+PlayerSection:NewToggle("Anti Local Damage", "Counter Local Damage", function(state)
+    if state then
+        antidmg = true
+        if not antidmgonce then
+            antidmgonce = true
+            antidmghook = hookmetamethod(game, "__namecall", function(self, ...)
+                if antidmg then
+                    if self == game.ReplicatedStorage.RemoteEvents.Player.Damage and getnamecallmethod() == "FireServer" then
+                        local args = {...}
+                        if args[1] > 0 then
+                            args[1] = 0
+                        end
+                        return antidmghook(self, unpack(args))
+                    end
+                end
+                return antidmghook(self, ...)
+            end)
+        end
+    else
+        antidmg = false
+    end
+end)
+
 PlayerSection:NewToggle("INF Stamina", "Forces Stamina at 100", function(state)
     if state then
         infstam = true
@@ -145,6 +187,10 @@ PlayerSection:NewToggle("Noclip", "Clip Through Walls", function(state)
     end
 end)
 
+PlayerSection:NewButton("Displace Random", "Teleports player to a random location near by", function()
+    game.ReplicatedStorage.RemoteEvents.Event.DisplaceRandom:FireServer()
+end) 
+
 PlayerSection:NewButton("TP To Closest Crate", "Go To The Closest Crate", function()
     local crates = {}
     local closest = math.huge
@@ -179,6 +225,12 @@ end)
 
 local Visual = Window:NewTab("Visuals")
 local VisualSection = Visual:NewSection("Better Visuals")
+
+VisualSection:NewButton("Destroy Environment Effects", "Remove all environment effects", function()
+    game.workspace.DustParticle:Destroy()
+    game.workspace.EnvironmentParticle:Destroy()
+    game.workspace.Wind:Destroy()
+end)
 
 VisualSection:NewToggle("FullBright", "Brighten The Game", function(state)
     if state then
