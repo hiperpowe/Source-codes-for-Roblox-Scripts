@@ -1,5 +1,5 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("Jewelry Empire", "Ocean")
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/cooolchillX/ScriptHubSources/refs/heads/main/CrystallineApi.lua"))()
+local window = library:AddWindow("Crystalline Hub [Sell Jewelry!]", ui_options)
 
 local wp = false
 local jp = false
@@ -18,22 +18,31 @@ local MeteorESP = false
 local MeteorESPtable = {}
 local MeteorESPConnect = nil
 
-local Main = Window:NewTab("Main") --Main Tab
-local MainSection = Main:NewSection("Usual Stuff")
+local Main = window:AddTab("Main")
 
-MainSection:NewSlider("WalkSpeed", "Move Faster", 200, 16, function(s) -- 200 (MaxValue) | 16 (MinValue)
+Main:AddButton("Go back to Game selection", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/hiperpowe/Roblox-Hypers-HUB/refs/heads/main/HypersHUB.lua"))()
+end)
+
+Main:AddButton("Close Script", function()
+    game.CoreGui.imgui:Destroy()
+end)
+
+Main:AddLabel("")
+
+Main:AddSlider("WalkSpeed", function(s)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
-end)
+end, {min = 16, max = 500})
 
-MainSection:NewSlider("JumpPower", "Jump High", 200, 50, function(s) -- 200 (MaxValue) | 50 (MinValue)
+Main:AddSlider("JumpPower", function(s)
     game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
-end)
+end, {min = 50, max = 500})
 
-MainSection:NewSlider("HipHight", "Hip Point Higher", 400, 0, function(s) -- 400 (MaxValue) | 0 (MinValue)
+Main:AddSlider("HipHeight", function(s)
     game.Players.LocalPlayer.Character.Humanoid.HipHeight = s
-end)
+end, {min = 2, max = 50})
 
-MainSection:NewToggle("Loop Walkspeed", "Loop Speed", function(state) --loop WalkSpeed
+Main:AddSwitch("Loop Walkspeed", function(state)
     if state then
         wp = true
         local a = game.Players.LocalPlayer.Character.Humanoid.WalkSpeed
@@ -50,7 +59,7 @@ MainSection:NewToggle("Loop Walkspeed", "Loop Speed", function(state) --loop Wal
     end
 end)
 
-MainSection:NewToggle("Loop JumpPower", "Loop Jump Height", function(state) --loop JumpPower
+Main:AddSwitch("Loop Jumppower", function(state)
     if state then
         jp = true
         local a = game.Players.LocalPlayer.Character.Humanoid.JumpPower
@@ -67,7 +76,7 @@ MainSection:NewToggle("Loop JumpPower", "Loop Jump Height", function(state) --lo
     end
 end)
 
-MainSection:NewToggle("Loop HipHeight", "Loop HipHeight", function(state) --Loop HipHeight
+Main:AddSwitch("Loop HipHeight", function(state)
     if state then
         hh = true
         local a = game.Players.LocalPlayer.Character.Humanoid.HipHeight
@@ -84,10 +93,10 @@ MainSection:NewToggle("Loop HipHeight", "Loop HipHeight", function(state) --Loop
     end
 end)
 
-local Player = Window:NewTab("Player") --Player Tab
-local PlayerSection = Player:NewSection("Usual Stuff")
+local Player = window:AddTab("Player")
+Player:AddLabel("Usual Stuff")
 
-PlayerSection:NewToggle("Noclip", "Clip Through Walls", function(state) --Noclip
+Player:AddSwitch("Noclip", function(state)
     if state then
         noclip = true
         for _, v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
@@ -115,10 +124,10 @@ PlayerSection:NewToggle("Noclip", "Clip Through Walls", function(state) --Noclip
     end
 end)
 
-local Visual = Window:NewTab("Visuals") --Visuals Tab
-local VisualSection = Visual:NewSection("Better Visuals")
+local Visuals = window:AddTab("Visuals")
+Visuals:AddLabel("Better Visuals")
 
-VisualSection:NewToggle("FullBright", "Brighten The Game", function(state) --FullBright
+Visuals:AddSwitch("FullBright", function(state)
     if state then
         fb = true
         local lighting = game:GetService("Lighting")
@@ -148,7 +157,7 @@ VisualSection:NewToggle("FullBright", "Brighten The Game", function(state) --Ful
     end
 end)
 
-VisualSection:NewToggle("No Fog", "Removes Fog", function(state) --No Fog
+Visuals:AddSwitch("No Fog", function(state)
     if state then
         local v = game.Lighting.Atmosphere
         NoFogConnect = game.Lighting.Atmosphere:GetPropertyChangedSignal("Density"):Connect(function()
@@ -162,7 +171,7 @@ VisualSection:NewToggle("No Fog", "Removes Fog", function(state) --No Fog
     end
 end)
 
-VisualSection:NewToggle("Show Current Time", "A Free Clock", function(state) --Show Current Time
+Visuals:AddSwitch("Show Current Time", function(state)
     if state then
         local gui = Instance.new("ScreenGui")
         gui.Name = "ShowTime"
@@ -188,11 +197,11 @@ VisualSection:NewToggle("Show Current Time", "A Free Clock", function(state) --S
     end
 end)
 
-VisualSection:NewToggle("Meteor Notification", "Shows Notification When Meteor Lands", function(state) --Meteor Notification
-    if state then
+Visuals:AddSwitch("Meteor Notification", function(state)
+if state then
         meteornotifconnect = game.workspace.WorldEvents.ChildAdded:Connect(function(v)
             if v:IsA("Model") and v.Name == "Meteor" then
-                game.StarterGui:SetCore("SendNotification", {Title = "Meteor Landed!", Text = "A Meteor has Landed!", Duration = 4,})
+                game.StarterGui:SetCore("SendNotification", {Title = "Meteor Landing!", Text = "A Meteor has Landing!", Duration = 4,})
             end
         end)
     else
@@ -200,10 +209,10 @@ VisualSection:NewToggle("Meteor Notification", "Shows Notification When Meteor L
     end
 end)
 
-local TP = Window:NewTab("Teleports") --Teleports Tab
-local TPSection = TP:NewSection("Teleport to places")
+local TP = window:AddTab("Teleport")
+TP:AddLabel("Teleport to Places")
 
-TPSection:NewButton("Teleport To Your Plot", "Gets You Back To Your Own Plot", function() -- Teleport to Plot
+TP:AddButton("Teleport to your plot", function()
     local plotid = nil
     for _, v in pairs(game.workspace.GameWorld:GetChildren()) do
         if v:IsA("Folder") and string.find(string.lower(v.Name), "plot") then
@@ -219,10 +228,11 @@ TPSection:NewButton("Teleport To Your Plot", "Gets You Back To Your Own Plot", f
     end
 end)
 
-local Waypoint = Window:NewTab("Waypoints") --Waypoints Tab
-local WaypointSection = Waypoint:NewSection("Teleport to Waypoints")
+TP:AddLabel("")
 
-WaypointSection:NewButton("Create TP Point", "Make The Point", function() -- Create TP Point
+TP:AddLabel("TP Waypoints")
+
+TP:AddButton("Create TP Waypoint", function()
     local waitforclick
     game.StarterGui:SetCore("SendNotification", {Title = "Waiting", Text = "Click Where You Want The Point", Duration = 4,})
     waitforclick = game.UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -264,17 +274,19 @@ WaypointSection:NewButton("Create TP Point", "Make The Point", function() -- Cre
     end)
 end)
 
-WaypointSection:NewButton("TP To Point", "Tp You To The Point", function() -- Teleport to Point
+TP:AddButton("TP to point", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.workspace.TpPoint.CFrame
 end)
 
-WaypointSection:NewButton("Delete TP Point", "Remove The Point", function() -- Delete TP Point
+TP:AddButton("Delete TP Point", function()
     game.workspace.TpPoint:Destroy()
 end)
 
-local WaypointSection = Waypoint:NewSection("Extra Point For Quality Of Life")
+TP:AddLabel("")
 
-WaypointSection:NewButton("Create Extra TP Point", "Makes Things Easier", function() -- Create Extra TP Point
+TP:AddLabel("Extra Point For Quality Of Life")
+
+TP:AddButton("Create Extra TP Point", function()
     local waitforclick
     game.StarterGui:SetCore("SendNotification", {Title = "Waiting", Text = "Click Where You Want The Point", Duration = 4,})
     waitforclick = game.UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -316,18 +328,18 @@ WaypointSection:NewButton("Create Extra TP Point", "Makes Things Easier", functi
     end)
 end)
 
-WaypointSection:NewButton("TP To Extra TP Point", "Makes Things Easier", function() -- Teleport to Extra TP Point
+TP:AddButton("TP to Extra TP Point", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.workspace.ExtraTpPoint.CFrame
 end)
 
-WaypointSection:NewButton("Delete Extra TP Point", "Makes Things Easier", function() -- Delete Extra TP Point
+TP:AddButton("Delete Extra TP Point", function()
     game.workspace.ExtraTpPoint:Destroy()
 end)
 
-local ESP = Window:NewTab("ESP") --ESP Tab
-local ESPSection = ESP:NewSection("ESP Options")
+local ESP = window:AddTab("ESP")
+ESP:AddLabel("ESP Options")
 
-ESPSection:NewToggle("Player ESP", "See Player Names", function(state) -- Player ESP
+ESP:AddSwitch("Player ESP", function(state)
     if state then
         player = true
         for _, v in pairs(game.workspace:GetChildren()) do
@@ -396,7 +408,7 @@ ESPSection:NewToggle("Player ESP", "See Player Names", function(state) -- Player
     end
 end)
 
-ESPSection:NewToggle("Meteor ESP", "See Meteor Highlight", function(state) -- Meteor ESP
+ESP:AddSwitch("Meteor ESP", function(state)
     if state then
         MeteorESP = true
         for _, v in pairs(game.workspace.WorldEvents:GetDescendants()) do
@@ -461,11 +473,4 @@ ESPSection:NewToggle("Meteor ESP", "See Meteor Highlight", function(state) -- Me
             end
         end
     end
-end)
-
-local UI = Window:NewTab("UI Toggle")
-local UISection = UI:NewSection("Show/Hide")
-
-UISection:NewKeybind("Show/Hide GUI", "Toggle UI", Enum.KeyCode.RightShift, function()
-	Library:ToggleUI()
 end)
