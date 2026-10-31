@@ -4,9 +4,15 @@ local window = library:AddWindow("Crystalline Hub [INFAMY]", ui_options)
 local Main = window:AddTab("Main")
 Main:AddLabel("Usual Stuff")
 
+Main:AddButton("Go back to Game selection", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/hiperpowe/Roblox-Hypers-HUB/refs/heads/main/HypersHUB.lua"))()
+end)
+
 Main:AddButton("Close Script", function()
     game.CoreGui.imgui:Destroy()
 end)
+
+Main:AddLabel("")
 
 Main:AddSlider("WalkSpeed", function(s)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
