@@ -28,6 +28,10 @@ Main:AddButton("Close Script", function()
     game.CoreGui.imgui:Destroy()
 end)
 
+Main:AddKeybind("Toggle UI", function()
+    game.CoreGui.imgui.Visible = not game.CoreGui.imgui.Visible
+end, {standard = Enum.KeyCode.RightShift})
+
 Main:AddLabel("")
 
 Main:AddSlider("WalkSpeed", function(s)
