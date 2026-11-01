@@ -44,7 +44,7 @@ end, {min = 50, max = 500})
 
 Main:AddSlider("HipHeight", function(s)
     game.Players.LocalPlayer.Character.Humanoid.HipHeight = s
-end, {min = 2, max = 50})
+end, {min = 0, max = 50})
 
 Main:AddSwitch("Loop Walkspeed", function(state)
     if state then
