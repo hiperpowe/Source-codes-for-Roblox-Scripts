@@ -2,7 +2,7 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/coool
 local window = library:AddWindow("Crystalline Hub [INFAMY]", ui_options)
 
 local Main = window:AddTab("Main")
-Main:AddLabel("Usual Stuff")
+Main:AddLabel("GUI Options")
 
 Main:AddButton("Go back to Game selection", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/hiperpowe/Roblox-Hypers-HUB/refs/heads/main/HypersHUB.lua"))()
@@ -17,6 +17,7 @@ Main:AddKeybind("Toggle UI", function()
 end, {standard = Enum.KeyCode.RightShift})
 
 Main:AddLabel("")
+Main:AddLabel("Player Options")
 
 Main:AddSlider("WalkSpeed", function(s)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
