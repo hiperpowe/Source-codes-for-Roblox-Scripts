@@ -1,5 +1,5 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("West Wood: Remake", "Ocean")
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/cooolchillX/ScriptHubSources/refs/heads/main/CrystallineApi.lua"))()
+local window = library:AddWindow("Crystalline Hub [West Wood Remake]", ui_options)
 
 local wp = false
 local jp = false
@@ -37,22 +37,37 @@ local FreezePlayers = false
 local playerspeed = 16
 local playername = ""
 
-local Main = Window:NewTab("Main")
-local MainSection = Main:NewSection("Usual Stuff")
+local Main = window:AddTab("Main")
+Main:AddLabel("GUI Options")
 
-MainSection:NewSlider("WalkSpeed", "Move Faster", 200, 16, function(s) -- 200 (MaxValue) | 16 (MinValue)
+Main:AddButton("Go back to Game selection", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/hiperpowe/Roblox-Hypers-HUB/refs/heads/main/HypersHUB.lua"))()
+end)
+
+Main:AddButton("Close Script", function()
+    game.CoreGui.imgui:Destroy()
+end)
+
+Main:AddKeybind("Toggle UI", function()
+    game.CoreGui.imgui.Visible = not game.CoreGui.imgui.Visible
+end, {standard = Enum.KeyCode.RightShift})
+
+Main:AddLabel("")
+Main:AddLabel("Player Options")
+
+Main:AddSlider("WalkSpeed", function(s)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
-end)
+end, {min = 16, max = 500})
 
-MainSection:NewSlider("JumpPower", "Jump High", 200, 50, function(s) -- 200 (MaxValue) | 50 (MinValue)
+Main:AddSlider("JumpPower", function(s)
     game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
-end)
+end, {min = 50, max = 500})
 
-MainSection:NewSlider("HipHight", "Hip Point Higher", 400, 0, function(s) -- 400 (MaxValue) | 0 (MinValue)
+Main:AddSlider("HipHeight", function(s)
     game.Players.LocalPlayer.Character.Humanoid.HipHeight = s
-end)
+end, {min = 0, max = 50})
 
-MainSection:NewToggle("Loop Walkspeed", "Loop Speed", function(state)
+Main:AddSwitch("Loop Walkspeed", function(state)
     if state then
         wp = true
         local a = game.Players.LocalPlayer.Character.Humanoid.WalkSpeed
@@ -69,7 +84,7 @@ MainSection:NewToggle("Loop Walkspeed", "Loop Speed", function(state)
     end
 end)
 
-MainSection:NewToggle("Loop JumpPower", "Loop Jump Height", function(state)
+Main:AddSwitch("Loop Jumppower", function(state)
     if state then
         jp = true
         local a = game.Players.LocalPlayer.Character.Humanoid.JumpPower
@@ -86,7 +101,7 @@ MainSection:NewToggle("Loop JumpPower", "Loop Jump Height", function(state)
     end
 end)
 
-MainSection:NewToggle("Loop HipHeight", "Loop HipHeight", function(state)
+Main:AddSwitch("Loop HipHeight", function(state)
     if state then
         hh = true
         local a = game.Players.LocalPlayer.Character.Humanoid.HipHeight
@@ -103,10 +118,9 @@ MainSection:NewToggle("Loop HipHeight", "Loop HipHeight", function(state)
     end
 end)
 
-local Player = Window:NewTab("Player")
-local PlayerSection = Player:NewSection("Usual Stuff")
+local Player = window:AddTab("Player")
 
-PlayerSection:NewToggle("Godmode", "Never Die", function(state)
+Player:AddSwitch("Godmode", function(state)
     if state then
         godmode = true
         while task.wait(0.05) do
@@ -121,7 +135,7 @@ PlayerSection:NewToggle("Godmode", "Never Die", function(state)
     end
 end)
 
-PlayerSection:NewToggle("Anti Local Damage", "Counter Local Damage", function(state)
+Player:AddSwitch("Anti localDamage", function(state)
     if state then
         antidmg = true
         if not antidmgonce then
@@ -144,7 +158,7 @@ PlayerSection:NewToggle("Anti Local Damage", "Counter Local Damage", function(st
     end
 end)
 
-PlayerSection:NewToggle("INF Stamina", "Forces Stamina at 100", function(state)
+Player:AddSwitch("Infinite Stamina", function(state)
     if state then
         infstam = true
         while task.wait(0.1) do
@@ -159,7 +173,7 @@ PlayerSection:NewToggle("INF Stamina", "Forces Stamina at 100", function(state)
     end
 end)
 
-PlayerSection:NewToggle("Noclip", "Clip Through Walls", function(state)
+Player:AddSwitch("Noclip", function(state)
     if state then
         noclip = true
         for _, v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
@@ -187,11 +201,12 @@ PlayerSection:NewToggle("Noclip", "Clip Through Walls", function(state)
     end
 end)
 
-PlayerSection:NewButton("Displace Random", "Teleports player to a random location near by", function()
+Player:AddLabel("Displace Random Teleports player to a random location near by")
+Player:AddButton("Displace", function()
     game.ReplicatedStorage.RemoteEvents.Event.DisplaceRandom:FireServer()
-end) 
+end)
 
-PlayerSection:NewButton("TP To Closest Crate", "Go To The Closest Crate", function()
+Player:AddButton("TP To Closest Crate", function()
     local crates = {}
     local closest = math.huge
     local closestobj = nil
@@ -215,7 +230,7 @@ PlayerSection:NewButton("TP To Closest Crate", "Go To The Closest Crate", functi
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = closestobj:GetPivot()
 end)
 
-PlayerSection:NewButton("TP To Held Crate Destination", "Complete The Crates Mission", function()
+Player:AddButton("TP To Held Crate Destination", function()
     for _, v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
         if v:IsA("Tool") and v.Name == "Crate" then
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Location.Value)
@@ -223,16 +238,16 @@ PlayerSection:NewButton("TP To Held Crate Destination", "Complete The Crates Mis
     end
 end)
 
-local Visual = Window:NewTab("Visuals")
-local VisualSection = Visual:NewSection("Better Visuals")
+local Visuals = window:AddTab("Visuals")
+Visuals:AddLabel("Better Visuals")
 
-VisualSection:NewButton("Destroy Environment Effects", "Remove all environment effects", function()
+Visuals:AddButton("Destroy Environment Effects", function()
     game.workspace.DustParticle:Destroy()
     game.workspace.EnvironmentParticle:Destroy()
     game.workspace.Wind:Destroy()
 end)
 
-VisualSection:NewToggle("FullBright", "Brighten The Game", function(state)
+Visuals:AddSwitch("Fullbright", function(state)
     if state then
         fb = true
         local lighting = game:GetService("Lighting")
@@ -262,7 +277,7 @@ VisualSection:NewToggle("FullBright", "Brighten The Game", function(state)
     end
 end)
 
-VisualSection:NewToggle("No Fog", "Removes Fog", function(state)
+Visuals:AddSwitch("No Fog", function(state)
     if state then
         local v = game.Lighting.Atmosphere
         NoFogConnect = game.Lighting.Atmosphere:GetPropertyChangedSignal("Density"):Connect(function()
@@ -276,15 +291,15 @@ VisualSection:NewToggle("No Fog", "Removes Fog", function(state)
     end
 end)
 
-VisualSection:NewButton("Open Dealer's Shop", "Open's Dealer's Shop UI", function(state)
+Visuals:AddButton("Open Dealer's Shop", function()
     fireproximityprompt(game.workspace.NPC.Friendly.Dealer.HumanoidRootPart.Attachment.ProximityPrompt)
 end)
 
-local ESP = Window:NewTab("ESP")
-local ESPSection = ESP:NewSection("Contract Board is a Green Highlight")
-local ESPSection = ESP:NewSection("toggle ESP")
+local ESP = window:AddTab("ESP")
+ESP:AddLabel("Contract Board is a Green Highlight")
+ESP:AddLabel("toggle ESP")
 
-ESPSection:NewToggle("Player ESP", "See Player Names", function(state) -- Player ESP
+ESP:AddSwitch("Player ESP", function(state)
     if state then
         player = true
         for _, v in pairs(game.workspace:GetChildren()) do
@@ -353,7 +368,7 @@ ESPSection:NewToggle("Player ESP", "See Player Names", function(state) -- Player
     end
 end)
 
-ESPSection:NewToggle("Wendigo ESP", "See Wendigo Highlight", function(state) -- Wendigo ESP
+ESP:AddSwitch("Wendigo ESP", function(state)
     if state then
         MonsterESP = true
         for _, v in pairs(game.workspace.NPC.Enemy:GetChildren()) do
@@ -420,7 +435,7 @@ ESPSection:NewToggle("Wendigo ESP", "See Wendigo Highlight", function(state) -- 
     end
 end)
 
-ESPSection:NewToggle("Friendly Dealer ESP", "See Friendly Dealer", function(state) -- Friendly Dealer ESP
+ESP:AddSwitch("Friendly Dealer ESP", function(state)
     if state then
         FDealerESP = true
         for _, v in pairs(game.workspace.NPC.Friendly:GetChildren()) do
@@ -487,7 +502,7 @@ ESPSection:NewToggle("Friendly Dealer ESP", "See Friendly Dealer", function(stat
     end
 end)
 
-ESPSection:NewToggle("Contract Board ESP", "See Contract Board Highlight", function(state) -- Contract Board ESP
+ESP:AddSwitch("Contract Board ESP", function(state)
     if state then
         ContractESP = true
         for _, v in pairs(game.workspace.Map.Structures.MinorStructures:GetChildren()) do
@@ -537,7 +552,7 @@ ESPSection:NewToggle("Contract Board ESP", "See Contract Board Highlight", funct
     end
 end)
 
-ESPSection:NewToggle("Crate ESP", "See Crates", function(state) -- Crate ESP
+ESP:AddSwitch("Crate ESP", function(state)
     if state then
         CrateESP = true
         for _, v in pairs(game.workspace.Utility.LostCrates:GetDescendants()) do
@@ -625,10 +640,10 @@ ESPSection:NewToggle("Crate ESP", "See Crates", function(state) -- Crate ESP
     end
 end)
 
-local items = Window:NewTab("Items")
-local itemsSection = items:NewSection("Mod Items")
+local Items = window:AddTab("Items")
+Items:AddLabel("Mod Items")
 
-itemsSection:NewButton("Mod Flashlight", "Make the flashlight better", function()
+Items:AddButton("Mod Flashlight", function()
     if game.Players.LocalPlayer.Character:FindFirstChild("FlashLight") then
         game.Players.LocalPlayer.Character.FlashLight.Ring:Destroy()
         game.Players.LocalPlayer.Character.FlashLight.Light.SpotLight.Angle = 180
@@ -640,15 +655,15 @@ itemsSection:NewButton("Mod Flashlight", "Make the flashlight better", function(
     end
 end)
 
-itemsSection:NewSlider("Flashlight Brightness", "Change the Brightness value", 30, 6, function(s) -- 500 (MaxValue) | 6 (MinValue)
+Items:AddSlider("Flashlight Brightness", function(s)
     if game.Players.LocalPlayer.Character:FindFirstChild("FlashLight") then
         game.Players.LocalPlayer.Character.FlashLight.Light.SpotLight.Brightness = s
     elseif game.Players.LocalPlayer.Backpack:FindFirstChild("FlashLight") then
         game.Players.LocalPlayer.Backpack.FlashLight.Light.SpotLight.Brightness = s
     end
-end)
+end, {min = 6, max = 30})
 
-itemsSection:NewButton("Mod Headlamp", "Make the Headlamp better", function()
+Items:AddButton("Mod HeadLamp", function()
     if game.Players.LocalPlayer.Character:FindFirstChild("HeadLamp") then
         game.Players.LocalPlayer.Character.HeadLamp.Light.SpotLight_02.Angle = 180
         game.Players.LocalPlayer.Character.HeadLamp.Light.SpotLight_02.Shadows = false
@@ -658,18 +673,18 @@ itemsSection:NewButton("Mod Headlamp", "Make the Headlamp better", function()
     end
 end)
 
-itemsSection:NewSlider("Headlamp Brightness", "Change the Brightness value", 30, 2, function(s) -- 500 (MaxValue) | 6 (MinValue)
+Items:AddSlider("HeadLamp Brightness", function(s)
     if game.Players.LocalPlayer.Character:FindFirstChild("HeadLamp") then
         game.Players.LocalPlayer.Character.HeadLamp.Light.SpotLight_02.Brightness = s
     elseif game.Players.LocalPlayer.Backpack:FindFirstChild("HeadLamp") then
         game.Players.LocalPlayer.Backpack.HeadLamp.Light.SpotLight_02.Brightness = s
     end
-end)
+end, {min = 2, max = 30})
 
-local Troll = Window:NewTab("Troll")
-local TrollSection = Troll:NewSection("Do Odd Things")
+local Troll = window:AddTab("Troll")
+Troll:AddLabel("Do odd things")
 
-TrollSection:NewToggle("Mach 1 Wendigo", "Wendigo Is Fast, Good Luck", function(state)
+Troll:AddSwitch("Moch Wendigo", function(state)
     if state then
         FastWendigo = true
         while task.wait(0.1) do
@@ -688,7 +703,7 @@ TrollSection:NewToggle("Mach 1 Wendigo", "Wendigo Is Fast, Good Luck", function(
     end
 end)
 
-TrollSection:NewToggle("Freeze Wendigo", "Wendigo Can't Move", function(state)
+Troll:AddSwitch("Freeze Wendigo", function(state)
     if state then
         FreezeWendigo = true
         while task.wait(0.1) do
@@ -707,7 +722,7 @@ TrollSection:NewToggle("Freeze Wendigo", "Wendigo Can't Move", function(state)
     end
 end)
 
-TrollSection:NewToggle("Freeze Players", "Make Players Unable To Move", function(state)
+Troll:AddSwitch("Freeze Players", function(state)
     if state then
         FreezePlayers = true
         while task.wait(0.1) do
@@ -737,16 +752,15 @@ TrollSection:NewToggle("Freeze Players", "Make Players Unable To Move", function
     end
 end)
 
-TrollSection:NewSlider("Speed Amount", "How Much Speed To Give Players", 1000, 1, function(s) -- 1000 (MaxValue) | 1 (MinValue)
+Troll:AddSlider("Players Speed", function(s)
     playerspeed = s
+end, {min = 1, max = 1000})
+
+Troll:AddTextBox("Player to Boost", function(txt)
+    playername = string.lower(txt)
 end)
 
-TrollSection:NewTextBox("Player To Boost", "Who To Boost", function(txt)
-	playername = string.lower(txt)
-end)
-
-
-TrollSection:NewButton("Boost Player", "Boost That Person", function()
+Troll:AddButton("Boost Player", function()
     pcall(function()
         for _, v in pairs(game.Workspace:GetChildren()) do
             if v:FindFirstChild("Humanoid") then
@@ -758,7 +772,7 @@ TrollSection:NewButton("Boost Player", "Boost That Person", function()
     end)
 end)
 
-TrollSection:NewToggle("Boost All Players", "Make Players Fast", function(state)
+Troll:AddSwitch("Boost All Players", function(state)
     if state then
         FastPlayers = true
         while task.wait(0.1) do
@@ -786,11 +800,4 @@ TrollSection:NewToggle("Boost All Players", "Make Players Fast", function(state)
             end
         end
     end
-end)
-
-local UI = Window:NewTab("UI Toggle")
-local UISection = UI:NewSection("Show/Hide")
-
-UISection:NewKeybind("Show/Hide GUI", "Toggle UI", Enum.KeyCode.RightShift, function()
-	Library:ToggleUI()
 end)
