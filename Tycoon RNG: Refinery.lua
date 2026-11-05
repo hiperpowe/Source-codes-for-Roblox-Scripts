@@ -1,5 +1,5 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("Tycoon RNG: Refinery", "Ocean")
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/cooolchillX/ScriptHubSources/refs/heads/main/CrystallineApi.lua"))()
+local window = library:AddWindow("Crystalline Hub [Tycoon RNG: Refinery]", ui_options)
 
 local wp = false
 local jp = false
@@ -12,22 +12,37 @@ local CubeESP = false
 local CubeESPtable = {}
 local CubeESPConnect = nil
 
-local Main = Window:NewTab("Main")
-local MainSection = Main:NewSection("Usual Stuff")
+local Main = window:AddTab("Main")
+Main:AddLabel("GUI Options")
 
-MainSection:NewSlider("WalkSpeed", "Move Faster", 200, 16, function(s) -- 200 (MaxValue) | 16 (MinValue)
+Main:AddButton("Go back to Game selection", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/hiperpowe/Roblox-Hypers-HUB/refs/heads/main/HypersHUB.lua"))()
+end)
+
+Main:AddButton("Close Script", function()
+    game.CoreGui.imgui:Destroy()
+end)
+
+Main:AddKeybind("Toggle UI", function()
+    game.CoreGui.imgui.Visible = not game.CoreGui.imgui.Visible
+end, {standard = Enum.KeyCode.RightShift})
+
+Main:AddLabel("")
+Main:AddLabel("Player Options")
+
+Main:AddSlider("WalkSpeed", function(s)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
-end)
+end, {min = 16, max = 500})
 
-MainSection:NewSlider("JumpPower", "Jump High", 200, 50, function(s) -- 200 (MaxValue) | 50 (MinValue)
+Main:AddSlider("JumpPower", function(s)
     game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
-end)
+end, {min = 50, max = 500})
 
-MainSection:NewSlider("HipHight", "Hip Point Higher", 400, 0, function(s) -- 400 (MaxValue) | 0 (MinValue)
+Main:AddSlider("HipHeight", function(s)
     game.Players.LocalPlayer.Character.Humanoid.HipHeight = s
-end)
+end, {min = 0, max = 50})
 
-MainSection:NewToggle("Loop Walkspeed", "Loop Speed", function(state)
+Main:AddSwitch("Loop Walkspeed", function(state)
     if state then
         wp = true
         local a = game.Players.LocalPlayer.Character.Humanoid.WalkSpeed
@@ -44,7 +59,7 @@ MainSection:NewToggle("Loop Walkspeed", "Loop Speed", function(state)
     end
 end)
 
-MainSection:NewToggle("Loop JumpPower", "Loop Jump Height", function(state)
+Main:AddSwitch("Loop Jumppower", function(state)
     if state then
         jp = true
         local a = game.Players.LocalPlayer.Character.Humanoid.JumpPower
@@ -61,7 +76,7 @@ MainSection:NewToggle("Loop JumpPower", "Loop Jump Height", function(state)
     end
 end)
 
-MainSection:NewToggle("Loop HipHeight", "Loop HipHeight", function(state)
+Main:AddSwitch("Loop HipHeight", function(state)
     if state then
         hh = true
         local a = game.Players.LocalPlayer.Character.Humanoid.HipHeight
@@ -78,7 +93,7 @@ MainSection:NewToggle("Loop HipHeight", "Loop HipHeight", function(state)
     end
 end)
 
-MainSection:NewToggle("FullBright", "Brighten The Game", function(state)
+Main:AddSwitch("FullBright", function(state)
     if state then
         local lighting = game:GetService("Lighting")
         local properties = {ClockTime = 14, GlobalShadows = false, Ambient = Color3.fromRGB(255, 255, 255), Brightness = 10, OutdoorAmbient = Color3.fromRGB(255, 255, 255)}
@@ -98,10 +113,10 @@ MainSection:NewToggle("FullBright", "Brighten The Game", function(state)
     end
 end)
 
-local TP = Window:NewTab("Teleports")
-local TPSection = TP:NewSection("Teleport to places")
+local TP = window:AddTab("Teleports")
+TP:AddLabel("Teleport to places")
 
-TPSection:NewButton("Teleport To Your Plot", "Gets You Back To Your Own Plot", function()
+TP:AddButton("Teleport To Your Plot", function()
     for _, v in pairs(game.workspace.ActivePlots:GetChildren()) do
         if v:GetAttribute("OwnerUserId") == game.Players.LocalPlayer.UserId then
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v:GetPivot() + Vector3.new(0, 50, 0)
@@ -109,26 +124,29 @@ TPSection:NewButton("Teleport To Your Plot", "Gets You Back To Your Own Plot", f
     end
 end)
 
-TPSection:NewDropdown("Teleport To A Plot", "Select A Plot To Teleport To", {"Plot1", "Plot2", "Plot3", "Plot4", "Plot5", "Plot6"}, function(currentOption)
+local PlotTP = TP:AddDropdown("Teleport To A Plot", function(currentOption)
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.workspace.Plots[currentOption]:GetPivot() + Vector3.new(0, 50, 0)
 end)
+for i = 1, 6 do
+    PlotTP:Add("Plot" .. tostring(i))
+end
 
-TPSection:NewButton("Crafting", "Teloport to Crafting", function()
+TP:AddButton("Crafting", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-22.5374432, 17.9905567, 310.994385, 0.550280035, -8.10081815e-08, -0.83498019, 2.82084702e-08, 1, -7.84277603e-08, 0.83498019, 1.9603716e-08, 0.550280035)
 end)
 
-TPSection:NewButton("Tree House", "Teloport to Tree House", function()
+TP:AddButton("Tree House", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2.23203063, 99.1277313, 323.886017, 0.692402422, 1.58833835e-10, 0.721511483, -3.01230187e-08, 1, 2.86875785e-08, -0.721511483, -4.15974561e-08, 0.692402422)
 end)
 
-TPSection:NewButton("More Luck Area", "Teloport to More Luck Area", function()
+TP:AddButton("Luck Block", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(15.5204563, 100.712257, 304.36145, -0.0569952726, -0.00846459996, 0.99833858, -0.0252959803, 0.999655247, 0.00703161303, -0.998053908, -0.0248531848, -0.0571898222)
 end)
 
-local AUTO = Window:NewTab("Automation") 
-local AUTOSection = AUTO:NewSection("Automate things :)")
+local AUTO = window:AddTab("Automation")
+AUTO:AddLabel("Automate things :)")
 
-AUTOSection:NewToggle("Auto Fast Roll", "Rolls for you every second", function(state)
+AUTO:AddSwitch("Auto Fast Roll", function(state)
     if state then
         FastRoll = true 
         while task.wait(1) do
@@ -151,12 +169,12 @@ AUTOSection:NewToggle("Auto Fast Roll", "Rolls for you every second", function(s
     end
 end)
 
-AUTOSection:NewTextBox("Edits Unwanted limit", "Edit Auto removes unwanted items limit", function(txt)
-	limit = tonumber(txt)
+AUTO:AddTextBox("Edits Unwanted limit", function(txt)
+    limit = tonumber(txt)
 end)
 
-AUTOSection:NewToggle("Auto Removes unwanted items", "Removes unwanted items for you", function(state)
-     if state then
+AUTO:AddSwitch("Auto Remove Unwanted Items", function(state)
+    if state then
         RemoveItem = true
         while task.wait(0.1) do
             if RemoveItem then
@@ -192,7 +210,7 @@ AUTOSection:NewToggle("Auto Removes unwanted items", "Removes unwanted items for
     end
 end)
 
-AUTOSection:NewButton("Get all Cubes on map", "Gets all cube on map", function()
+AUTO:AddButton("Get all Cubes on map", function()
     for _, v in pairs(game.workspace.SpawnedCubes:GetChildren()) do
         if v.Name == "SpeedCube" then
             if v.PrimaryPart ~= nil then
@@ -206,10 +224,10 @@ AUTOSection:NewButton("Get all Cubes on map", "Gets all cube on map", function()
     end
 end)
 
-local ESP = Window:NewTab("ESP")
-local ESPSection = ESP:NewSection("toggle ESP")
+local ESP = window:AddTab("ESP")
+ESP:AddLabel("toggle ESP")
 
-ESPSection:NewToggle("Cube ESP", "See Ore Names", function(state)
+ESP:AddSwitch("Cube ESP", function(state)
     if state then
         CubeESP = true
         for _, v in pairs(game.workspace.SpawnedCubes:GetChildren()) do
@@ -289,11 +307,4 @@ ESPSection:NewToggle("Cube ESP", "See Ore Names", function(state)
             end
         end
     end
-end)
-
-local UI = Window:NewTab("UI Toggle")
-local UISection = UI:NewSection("Show/Hide")
-
-UISection:NewKeybind("Show/Hide GUI", "Toggle UI", Enum.KeyCode.RightShift, function()
-	Library:ToggleUI()
 end)
